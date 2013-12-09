@@ -13,8 +13,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       if(response && response.contact){
         data = response.contact;
       }
-      data.avatarUrl = data['avatar-url'];
-      delete data['avatar-url'];
       data.fullName = data.firstName + " ";
       data.fullName += data.lastName;
       return data;
@@ -36,6 +34,13 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       if( ! _.isEmpty(errors)){
         return errors;
       }
+    },
+
+    toJSON: function(){
+      var data = _.clone(this.attributes);
+      data.avatarUrl = data['avatar-url'];
+      delete data['avatar-url'];
+      return data;
     },
 
     sync: function(method, model, options){
