@@ -1,5 +1,20 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Repository = Backbone.Model.extend({
+    initialize: function(){
+      this.username = "USERNAME";
+      this.password = "PASSWORD";
+
+      var self = this;
+      this.on("sync", function(){
+        self.set({githubName: self.get("name")}, {silent:true});
+      });
+    },
+
+    urlRoot: "https://api.github.com",
+    url: function(){
+      return _.result(this, "urlRoot") + "/repos/" + this.username + "/" + (this.get("githubName") || this.get("name"));
+    },
+
     validate: function(attrs, options) {
       var errors = {}
       if (! attrs.name) {
@@ -11,12 +26,10 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
     },
 
     sync: function(method, model, options){
-      var username = "USERNAME",
-          password = "PASSWORD",
-          baseUrl = "https://api.github.com",
+      var self = this,
           config = {
             beforeSend: function (xhr) {
-              xhr.setRequestHeader ("Authorization", "Basic " + btoa(username + ":" + password));
+              xhr.setRequestHeader ("Authorization", "Basic " + btoa(self.username + ":" + self.password));
             }
           };
 
@@ -24,7 +37,7 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
         case "create":
           config = _.extend(config, {
             method: "POST",
-            url: baseUrl + "/user/repos",
+            url: _.result(this, "urlRoot") + "/user/repos",
             data: JSON.stringify(model.pick("name", "description", "homepage",
               "private", "has_issues", "has_wiki", "has_downloads", "team_id",
               "auto_init", "gitignore_template"
@@ -34,18 +47,22 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
         case "read":
           config = _.extend(config, {
-            method: "GET",
-            url: baseUrl + "/repos/" + username + "/" + model.get("name")
+            method: "GET"
           });
           break;
 
         case "update":
+          config = _.extend(config, {
+            method: "PATCH",
+            data: JSON.stringify(model.pick("name", "description", "homepage", "private",
+              "has_issues", "has_wiki", "has_downloads", "default_branch"
+            ))
+          });
           break;
 
         case "delete":
           config = _.extend(config, {
-            method: "DELETE",
-            url:  baseUrl + "/repos/" + username + "/" + model.get("name")
+            method: "DELETE"
           });
           break;
       };
