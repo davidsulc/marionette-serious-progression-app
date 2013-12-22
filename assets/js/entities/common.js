@@ -86,4 +86,28 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       return Backbone.Model.prototype.sync.call(this, method, model, options);
     }
   });
+
+  var originalSync = Backbone.sync;
+  Backbone.sync = function (method, model, options) {
+    var deferred = $.Deferred();
+    options || (options = {});
+    deferred.then(options.success, options.error);
+
+    var response = originalSync(method, model, _.omit(options, 'success', 'error'));
+
+    response.done(deferred.resolve);
+    response.fail(function() {
+        if(response.status == 401){
+          alert("This action isn't authorized!");
+        }
+        else if(response.status === 403){
+          alert(response.responseJSON.message);
+        }
+        else{
+          deferred.rejectWith(response, arguments);
+        }
+    });
+
+    return deferred.promise();
+  };
 });

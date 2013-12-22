@@ -1,8 +1,9 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Repository = Backbone.Model.extend({
-    initialize: function(){
-      this.username = "USERNAME";
-      this.password = "PASSWORD";
+    initialize: function(options){
+      options || (options = {});
+      this.username = options.username || "USERNAME";
+      this.password = options.password || "PASSWORD";
 
       var self = this;
       this.on("sync", function(){
