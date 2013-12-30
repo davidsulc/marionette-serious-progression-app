@@ -1,6 +1,6 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Contact = Entities.BaseModel.extend({
-    urlRoot: "contacts_legacy",
+    urlRoot: "contacts",
 
     defaults: {
       firstName: "",
@@ -36,13 +36,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       }
     },
 
-    toJSON: function(){
-      var data = _.clone(this.attributes);
-      data.avatarUrl = data['avatar-url'];
-      delete data['avatar-url'];
-      return data;
-    },
-
     sync: function(method, model, options){
       console.log("Contact's sync function called.");
 
@@ -51,7 +44,7 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   });
 
   Entities.ContactCollection = Backbone.Collection.extend({
-    url: "contacts_legacy",
+    url: "contacts",
     model: Entities.Contact,
     comparator: "firstName"
   });
