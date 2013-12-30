@@ -6,27 +6,39 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
 
       var fetchingContact = ContactManager.request("contact:entity", id);
       $.when(fetchingContact).done(function(contact){
-        var view;
-        if(contact !== undefined){
-          view = new Edit.Contact({
-            model: contact,
-            generateTitle: true
-          });
+        var view = new Edit.Contact({
+          model: contact,
+          generateTitle: true
+        });
 
-          view.on("form:submit", function(data){
-            if(contact.save(data)){
+        view.on("form:submit", function(data){
+          var savingContact = contact.save(data);
+          if(savingContact){
+            $.when(savingContact).done(function(){
               ContactManager.trigger("contact:show", contact.get("id"));
-            }
-            else{
-              view.triggerMethod("form:data:invalid", contact.validationError);
-            }
-          });
-        }
-        else{
-          view = new ContactManager.ContactsApp.Show.MissingContact();
-        }
+            }).fail(function(response){
+              if(response.status === 422){
+                view.triggerMethod("form:data:invalid", response.responseJSON.errors);
+              }
+              else{
+                alert("An unprocessed error happened. Please try again!");
+              }
+            });
+          }
+          else{
+            view.triggerMethod("form:data:invalid", contact.validationError);
+          }
+        });
 
         ContactManager.mainRegion.show(view);
+      }).fail(function(response){
+        if(response.status === 404){
+          var view = new ContactManager.ContactsApp.Show.MissingContact();
+          ContactManager.mainRegion.show(view);
+        }
+        else{
+          alert("An unprocessed error happened. Please try again!");
+        }
       });
     }
   };
