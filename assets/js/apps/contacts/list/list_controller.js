@@ -53,8 +53,9 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           });
 
           view.on("form:submit", function(data){
-            var contactSaved = newContact.save(data, {
-              success: function(){
+            var savingContact = newContact.save(data);
+            if(savingContact){
+              $.when(savingContact).done(function(){
                 contacts.add(newContact);
                 view.trigger("dialog:close");
                 var newContactView = contactsListView.children.findByModel(newContact);
@@ -63,9 +64,20 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
                 if(newContactView){
                   newContactView.flash("success");
                 }
-              }
-            });
-            if( ! contactSaved){
+              }).fail(function(response){
+                view.onDestroy = function(){
+                  newContact.set(newContact.previousAttributes());
+                };
+
+                if(response.status === 422){
+                  view.triggerMethod("form:data:invalid", response.responseJSON.errors);
+                }
+                else{
+                  alert("An unprocessed error happened. Please try again!");
+                }
+              });
+            }
+            else{
               view.triggerMethod("form:data:invalid", newContact.validationError);
             }
           });
@@ -84,10 +96,24 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           });
 
           view.on("form:submit", function(data){
-            if(model.save(data)){
-              childView.render();
-              view.trigger("dialog:close");
-              childView.flash("success");
+            var savingContact = model.save(data);
+            if(savingContact){
+              $.when(savingContact).done(function(){
+                childView.render();
+                view.trigger("dialog:close");
+                childView.flash("success");
+              }).fail(function(response){
+                view.onDestroy = function(){
+                  model.set(model.previousAttributes());
+                };
+
+                if(response.status === 422){
+                  view.triggerMethod("form:data:invalid", response.responseJSON.errors);
+                }
+                else{
+                  alert("An unprocessed error happened. Please try again!");
+                }
+              });
             }
             else{
               view.triggerMethod("form:data:invalid", model.validationError);
