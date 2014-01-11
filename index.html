@@ -88,6 +88,9 @@
     </script>
 
     <script type="text/template" id="contact-form">
+      {{ if(changedOnServer){ }}
+        <p class="alert alert-info">This model has changed on the server, and has been updated with the latest data from the server and your changes have been reapplied.</p>
+      {{ } }}
       <form>
         <div class="control-group">
           <label for="contact-firstName" class="control-label">First name:</label>
