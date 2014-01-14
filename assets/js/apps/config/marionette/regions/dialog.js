@@ -3,14 +3,20 @@ Marionette.Region.Dialog = Marionette.Region.extend({
     this.listenTo(view, "dialog:close", this.closeDialog);
 
     var self = this;
-    this.$el.dialog({
-      modal: true,
-      title: view.title,
-      width: "auto",
-      close: function(e, ui){
-        self.closeDialog();
-      }
-    });
+    var configureDialog = function(){
+      self.$el.dialog({
+        modal: true,
+        title: view.title,
+        width: "auto",
+        position: "center",
+        close: function(e, ui){
+          self.closeDialog();
+        }
+      });
+    };
+    configureDialog();
+
+    this.listenTo(view, "render", configureDialog);
   },
 
   closeDialog: function(){
