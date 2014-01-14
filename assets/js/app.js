@@ -37,14 +37,20 @@ ContactManager.on("before:start", function(){
 
     this.listenTo(view, "dialog:close", closeDialog);
 
-    this.$el.dialog({
-      modal: true,
-      title: view.title,
-      width: "auto",
-      close: function(e, ui){
-        closeDialog();
-      }
-    });
+    var configureDialog = function(){
+      self.$el.dialog({
+        modal: true,
+        title: view.title,
+        width: "auto",
+        position: "center",
+        close: function(e, ui){
+          closeDialog();
+        }
+      });
+    };
+    configureDialog();
+
+    this.listenTo(view, "render", configureDialog);
   };
 });
 

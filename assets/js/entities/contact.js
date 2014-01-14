@@ -2,6 +2,12 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   Entities.Contact = Entities.BaseModel.extend({
     urlRoot: "contacts",
 
+    initialize: function(){
+      this.on("change", function(){
+        this.set("fullName", this.get("firstName") + " " + this.get("lastName"));
+      });
+    },
+
     defaults: {
       firstName: "",
       lastName: "",
