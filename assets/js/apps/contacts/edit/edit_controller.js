@@ -12,13 +12,22 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
         });
 
         view.on("form:submit", function(data){
-          var savingContact = contact.save(data);
+          contact.set(data, {silent: true});
+          var savingContact = contact.save(data, {wait: true});
           if(savingContact){
+            view.onBeforeClose = function(){
+              contact.set({changedOnServer: false});
+            };
             $.when(savingContact).done(function(){
               ContactManager.trigger("contact:show", contact.get("id"));
             }).fail(function(response){
               if(response.status === 422){
+                var keys = ['firstName', 'lastName', 'phoneNumber'];
+                contact.refresh(response.responseJSON.entity, keys);
+
+                view.render();
                 view.triggerMethod("form:data:invalid", response.responseJSON.errors);
+                contact.set(response.responseJSON.entity, {silent:true});
               }
               else{
                 alert("An unprocessed error happened. Please try again!");
