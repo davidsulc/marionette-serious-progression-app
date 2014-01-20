@@ -126,4 +126,9 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
     return deferred.promise();
   };
+
+  _.extend(Backbone.Validation.messages, {
+    required: 'is required',
+    minLength: 'is too short (min {1} characters)'
+  });
 });
