@@ -88,6 +88,50 @@
       <div id="spinner"></div>
     </script>
 
+    <script type="text/template" id="pagination-controls">
+      {{ if(totalPages > 1){ }}
+        <ul>
+          {{ if(currentPage > 1){ }}
+            <li><a href="#" class="navigatable" data-page="1">&laquo;</a></li>
+            <li><a href="#" class="navigatable" data-page="{{- previous }}">&lsaquo;</a></li>
+          {{ }else{ }}
+            <li class="disabled"><a href="#">&laquo;</a></li>
+            <li class="disabled"><a href="#">&lsaquo;</a></li>
+          {{ } }}
+
+          {{ if(pageSet[0] > 1 ){ }}
+            <li class="disabled"><a href="#">...</a></li>
+          {{ } }}
+
+          {{ _.each(pageSet, function(page){ }}
+            {{ if(page === currentPage){ }}
+              <li class="active disabled"><a href="#">{{- page }}</a></li>
+            {{ }else{ }}
+              <li><a href="#" class="navigatable" data-page="{{- page }}">{{- page }}</a></li>
+            {{ } }}
+          {{ }); }}
+
+          {{ if(pageSet[pageSet.length - 1] !== lastPage){ }}
+            <li class="disabled"><a href="#">...</a></li>
+            <li><a href="#" class="navigatable" data-page="{{- lastPage }}">{{- lastPage }}</a></li>
+          {{ } }}
+
+          {{ if(currentPage !== lastPage){ }}
+            <li><a href="#" class="navigatable" data-page="{{- next }}">&rsaquo;</a></li>
+            <li><a href="#" class="navigatable" data-page="{{- lastPage }}">&raquo;</a></li>
+          {{ }else{ }}
+            <li class="disabled"><a href="#">&rsaquo;</a></li>
+            <li class="disabled"><a href="#">&raquo;</a></li>
+          {{ } }}
+        </ul>
+      {{ } }}
+    </script>
+
+    <script type="text/template" id="paginated-view">
+      <div class="js-pagination-controls"></div>
+      <div class="js-pagination-main"></div>
+    </script>
+
     <script type="text/template" id="contact-form">
       {{ if(changedOnServer){ }}
         <p class="alert alert-info">This model has changed on the server, and has been updated with the latest data from the server and your changes have been reapplied.</p>
@@ -136,6 +180,7 @@
     <script src="./assets/js/vendor/underscore.js"></script>
     <script src="./assets/js/vendor/backbone.js"></script>
     <script src="./assets/js/vendor/backbone.validation.js"></script>
+    <script src="./assets/js/vendor/backbone.paginator.js"></script>
     <script src="./assets/js/vendor/backbone.picky.js"></script>
     <script src="./assets/js/vendor/backbone.syphon.js"></script>
     <script src="./assets/js/vendor/backbone.marionette.js"></script>

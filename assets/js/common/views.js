@@ -34,4 +34,65 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       $("#spinner").spin(opts);
     }
   });
+
+  Views.PaginationControls = Marionette.ItemView.extend({
+    template: "#pagination-controls",
+    className: "pagination",
+
+    initialize: function(options){
+      this.paginatedCollection = options.paginatedCollection;
+      this.listenTo(this.paginatedCollection, "page:change:after", this.render);
+    },
+
+    events: {
+      "click a[class=navigatable]": "navigateToPage"
+    },
+
+    navigateToPage: function(e){
+      e.preventDefault();
+      var page = parseInt($(e.target).data("page"), 10);
+      this.paginatedCollection.parameters.set("page", page);
+      this.trigger("page:change", page);
+    },
+
+    serializeData: function(){
+      return this.paginatedCollection.info();
+    }
+  });
+
+  Views.PaginatedView = Marionette.LayoutView.extend({
+    template: "#paginated-view",
+
+    regions: {
+      paginationControlsRegion: ".js-pagination-controls",
+      paginationMainRegion: ".js-pagination-main"
+    },
+
+    initialize: function(options){
+      this.collection = options.collection;
+      var eventsToPropagate = options.propagatedEvents || [];
+
+      var controls = new Views.PaginationControls({
+        paginatedCollection: this.collection
+      });
+      var listView = new options.mainView({
+        collection: this.collection
+      });
+
+      var self = this;
+      this.listenTo(controls, "page:change", function(page){
+        self.trigger("page:change", page);
+      });
+      _.each(eventsToPropagate, function(evt){
+        self.listenTo(listView, evt, function(view, model){
+          self.trigger(evt, view, model);
+        });
+      });
+
+      this.on("show", function(){
+        this.paginationControlsRegion.show(controls);
+        this.paginationMainRegion.show(listView);
+      });
+    }
+  });
 });
