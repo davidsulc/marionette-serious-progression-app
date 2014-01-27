@@ -46,10 +46,37 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
   _.extend(Entities.Contact.prototype, Backbone.Validation.mixin);
 
-  Entities.ContactCollection = Backbone.Collection.extend({
-    url: "contacts",
+  Entities.ContactCollection = Backbone.Paginator.clientPager.extend({
     model: Entities.Contact,
-    comparator: "firstName"
+
+    initialize: function(models, options){
+      options || (options = {});
+      var params = options.parameters || { page: 1 };
+      this.parameters = new Backbone.Model(params);
+
+      var self = this;
+      this.listenTo(this.parameters, "change", function(model){
+        if(_.has(model.changed, "criterion")){
+          self.setFilter(["firstName", "lastName", "phoneNumber"], self.parameters.get("criterion"));
+        }
+        if(_.has(model.changed, "page")){
+          self.goTo(parseInt(self.parameters.get("page"), 10));
+        }
+        self.trigger("page:change:after");
+      });
+    },
+
+    comparator: "firstName",
+    paginator_core: {
+      dataType: "json",
+      url: "contacts"
+    },
+    paginator_ui: {
+      firstPage: 1,
+      currentPage: 1,
+      perPage: 10,
+      pagesInRange: 2
+    }
   });
 
   var API = {
@@ -57,6 +84,8 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       var contacts = new Entities.ContactCollection();
       var defer = $.Deferred();
       options || (options = {});
+      // for paginator, see https://github.com/backbone-paginator/backbone.paginator/pull/180
+      options.reset = true;
       defer.then(options.success, options.error);
       var response = contacts.fetch(_.omit(options, 'success', 'error'));
       response.done(function(){

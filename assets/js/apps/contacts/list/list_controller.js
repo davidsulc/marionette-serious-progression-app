@@ -10,33 +10,29 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       var contactsListPanel = new List.Panel();
 
       $.when(fetchingContacts).done(function(contacts){
-        var filteredContacts = ContactManager.Entities.FilteredCollection({
-          collection: contacts,
-          filterFunction: function(filterCriterion){
-            var criterion = filterCriterion.toLowerCase();
-            return function(contact){
-              if(contact.get("firstName").toLowerCase().indexOf(criterion) !== -1
-                || contact.get("lastName").toLowerCase().indexOf(criterion) !== -1
-                || contact.get("phoneNumber").toLowerCase().indexOf(criterion) !== -1){
-                  return contact;
-              }
-            };
-          }
-        });
-
         if(criterion){
-          filteredContacts.filter(criterion);
+          contacts.parameters.set({ criterion: criterion });
           contactsListPanel.once("show", function(){
             contactsListPanel.triggerMethod("set:filter:criterion", criterion);
           });
         }
 
-        var contactsListView = new List.Contacts({
-          collection: filteredContacts
+        contacts.goTo(1);
+        var contactsListView = new ContactManager.Common.Views.PaginatedView({
+          collection: contacts,
+          mainView: List.Contacts,
+          propagatedEvents: [
+            "itemview:contact:show",
+            "itemview:contact:edit",
+            "itemview:contact:delete"
+          ]
         });
 
         contactsListPanel.on("contacts:filter", function(filterCriterion){
-          filteredContacts.filter(filterCriterion);
+          contacts.parameters.set({
+            page: 1,
+            criterion: filterCriterion
+          });
           ContactManager.trigger("contacts:filter", filterCriterion);
         });
 
