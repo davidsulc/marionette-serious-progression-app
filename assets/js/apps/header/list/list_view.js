@@ -5,8 +5,10 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
 
     events: {
       "click a": "navigate"
-    },
+    }
+  });
 
+  _.extend(List.Header.prototype, {
     navigate: function(e){
       e.preventDefault();
       this.trigger("navigate", this.model);
@@ -28,8 +30,10 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
 
     events: {
       "click a.brand": "brandClicked"
-    },
+    }
+  });
 
+  _.extend(List.Headers.prototype, {
     brandClicked: function(e){
       e.preventDefault();
       this.trigger("brand:clicked");

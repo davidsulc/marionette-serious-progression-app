@@ -14,8 +14,10 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       phoneNumber: "",
 
       changedOnServer: false
-    },
+    }
+  });
 
+  _.extend(Entities.Contact.prototype, Backbone.Validation.mixin, {
     parse: function(response){
       var data = response;
       if(response && response.contact){
@@ -43,8 +45,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       return Entities.BaseModel.prototype.sync.call(this, method, model, options);
     }
   });
-
-  _.extend(Entities.Contact.prototype, Backbone.Validation.mixin);
 
   Entities.ContactCollection = Backbone.Paginator.requestPager.extend({
     model: Entities.Contact,
@@ -85,7 +85,10 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       count: function() { return this.perPage },
       offset: function() { return ((this.parameters.get("page") || 1) - 1) * this.perPage },
       filter: function() { return this.parameters.get("criterion"); }
-    },
+    }
+  });
+
+  _.extend(Entities.ContactCollection.prototype, {
     parse: function (response) {
       var data = response.results;
       this.totalRecords = response.resultCount;

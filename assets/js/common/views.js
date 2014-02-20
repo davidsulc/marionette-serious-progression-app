@@ -6,8 +6,10 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       var options = options || {};
       this.title = options.title || "Loading Data";
       this.message = options.message || "Please wait, data is loading.";
-    },
+    }
+  });
 
+  _.extend(Views.Loading.prototype, {
     serializeData: function(){
       return {
         title: this.title,
@@ -50,8 +52,10 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
 
     events: {
       "click a[class=navigatable]": "navigateToPage"
-    },
+    }
+  });
 
+  _.extend(Views.PaginationControls.prototype, {
     navigateToPage: function(e){
       e.preventDefault();
       var page = parseInt($(e.target).data("page"), 10);

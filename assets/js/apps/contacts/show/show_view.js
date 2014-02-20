@@ -8,8 +8,10 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
 
     events: {
       "click a.js-edit": "editClicked"
-    },
+    }
+  });
 
+  _.extend(Show.Contact.prototype, {
     editClicked: function(e){
       e.preventDefault();
       this.trigger("contact:edit", this.model);
