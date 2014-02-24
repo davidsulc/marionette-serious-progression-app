@@ -33,4 +33,8 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
   });
 
   Show.Controller = new Controller();
+
+  Show.Controller.listenTo(ContactManager.ContactsApp, "stop", function(){
+    Show.Controller.close();
+  });
 });

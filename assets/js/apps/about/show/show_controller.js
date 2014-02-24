@@ -7,4 +7,8 @@ ContactManager.module("AboutApp.Show", function(Show, ContactManager, Backbone, 
   });
 
   Show.Controller = new Controller();
+
+  Show.Controller.listenTo(ContactManager.AboutApp, "stop", function(){
+    Show.Controller.close();
+  });
 });

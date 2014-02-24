@@ -1,5 +1,17 @@
 ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backbone, Marionette, $, _){
-  ContactsApp.Router = Marionette.AppRouter.extend({
+  ContactsApp.startWithParent = false;
+
+  ContactsApp.onStart = function(){
+    console.log("starting contacts app");
+  };
+
+  ContactsApp.onStop = function(){
+    console.log("stopping contacts app");
+  };
+});
+
+ContactManager.module("Routers.ContactsApp", function(ContactsAppRouter, ContactManager, Backbone, Marionette, $, _){
+  ContactsAppRouter.Router = Marionette.AppRouter.extend({
     appRoutes: {
       "contacts(/filter/:params)": "listContacts",
       "contacts/:id": "showContact",
@@ -32,21 +44,24 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
     return (_.map(_.filter(_.pairs(options), function(pair){ return pair[1]; }), function(pair){ return pair.join(":"); })).join("+");
   };
 
+  var executeAction = function(action, arg){
+    ContactManager.startSubApp("ContactsApp");
+    action(arg);
+    ContactManager.execute("set:active:header", "contacts");
+  };
+
   var API = {
     listContacts: function(params){
       var options = parseParams(params);
-      ContactsApp.List.Controller.listContacts(options);
-      ContactManager.execute("set:active:header", "contacts");
+      executeAction(ContactManager.ContactsApp.List.Controller.listContacts, options);
     },
 
     showContact: function(id){
-      ContactsApp.Show.Controller.showContact(id);
-      ContactManager.execute("set:active:header", "contacts");
+      executeAction(ContactManager.ContactsApp.Show.Controller.showContact, id);
     },
 
     editContact: function(id){
-      ContactsApp.Edit.Controller.editContact(id);
-      ContactManager.execute("set:active:header", "contacts");
+      executeAction(ContactManager.ContactsApp.Edit.Controller.editContact, id);
     }
   };
 
@@ -74,7 +89,7 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
   });
 
   ContactManager.addInitializer(function(){
-    new ContactsApp.Router({
+    new ContactsAppRouter.Router({
       controller: API
     });
   });

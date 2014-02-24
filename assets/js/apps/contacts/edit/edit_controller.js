@@ -53,4 +53,8 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
   });
 
   Edit.Controller = new Controller();
+
+  Edit.Controller.listenTo(ContactManager.ContactsApp, "stop", function(){
+    Edit.Controller.close();
+  });
 });

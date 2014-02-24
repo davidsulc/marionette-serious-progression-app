@@ -1,5 +1,8 @@
 ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbone, Marionette, $, _){
   var Controller = Marionette.Controller.extend({
+    onClose: function(){
+      console.log("closing controller");
+    },
     listContacts: function(options){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.mainRegion.show(loadingView);
@@ -149,4 +152,8 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
   });
 
   List.Controller = new Controller();
+
+  List.Controller.listenTo(ContactManager.ContactsApp, "stop", function(){
+    List.Controller.close();
+  });
 });
