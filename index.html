@@ -79,6 +79,17 @@
         Edit this contact
       </a>
       <p><strong>Phone number:</strong> {{- phoneNumber }}</p>
+
+      <h2>Acquaintances</h2>
+      {{ if(acquaintances.models.length > 0){ }}
+        <ul>
+        {{ _.each(acquaintances.models, function(a){ }}
+          <li>{{- a.attributes.fullName }}</li>
+        {{ }); }}
+        </ul>
+      {{ }else{ }}
+        <p>This contact doesn't know anybody...</p>
+      {{ } }}
     </script>
 
     <script type="text/template" id="loading-view">

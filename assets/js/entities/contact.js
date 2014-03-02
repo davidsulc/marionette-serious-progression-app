@@ -1,6 +1,8 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Contact = Entities.BaseModel.extend({
-    urlRoot: "contacts",
+    url: function(){
+      return "contacts_paginated/" + this.get("id") + ".json?include_acquaintances=1";
+    },
 
     initialize: function(){
       this.on("change", function(){
@@ -25,6 +27,11 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       }
       data.fullName = data.firstName + " ";
       data.fullName += data.lastName;
+
+      if(response.acquaintances){
+        data.acquaintances = new Entities.AcquaintanceCollection(response.acquaintances, { parse: true });
+      }
+
       return data;
     },
 
@@ -44,6 +51,11 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
       return Entities.BaseModel.prototype.sync.call(this, method, model, options);
     }
+  });
+
+  Entities.AcquaintanceCollection = Backbone.Collection.extend({
+    model: Entities.Contact,
+    comparator: "firstName"
   });
 
   Entities.ContactCollection = Backbone.Paginator.requestPager.extend({
