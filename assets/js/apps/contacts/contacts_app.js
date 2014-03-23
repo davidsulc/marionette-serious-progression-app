@@ -50,25 +50,25 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
     }
   };
 
-  ContactManager.on("page:change", function(options){
+  this.listenTo(ContactManager, "page:change", function(options){
     ContactManager.navigate("contacts/filter/" + serializeParams(options));
   });
 
-  ContactManager.on("contacts:list", function(){
+  this.listenTo(ContactManager, "contacts:list", function(){
     ContactManager.navigate("contacts");
     API.listContacts();
   });
 
-  ContactManager.on("contacts:filter", function(options){
+  this.listenTo(ContactManager, "contacts:filter", function(options){
     ContactManager.navigate("contacts/filter/" + serializeParams(options));
   });
 
-  ContactManager.on("contact:show", function(id){
+  this.listenTo(ContactManager, "contact:show", function(id){
     ContactManager.navigate("contacts/" + id);
     API.showContact(id);
   });
 
-  ContactManager.on("contact:edit", function(id){
+  this.listenTo(ContactManager, "contact:edit", function(id){
     ContactManager.navigate("contacts/" + id + "/edit");
     API.editContact(id);
   });

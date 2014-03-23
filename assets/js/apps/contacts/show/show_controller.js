@@ -1,5 +1,5 @@
 ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbone, Marionette, $, _){
-  Show.Controller = {
+  var Controller = Marionette.Controller.extend({
     showContact: function(id){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.mainRegion.show(loadingView);
@@ -14,7 +14,7 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
           model: contact
         });
 
-        contactView.on("contact:edit", function(contact){
+        Show.Controller.listenTo(contactView, "contact:edit", function(contact){
           ContactManager.trigger("contact:edit", contact.get("id"));
         });
 
@@ -30,5 +30,7 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
         }
       });
     }
-  }
+  });
+
+  Show.Controller = new Controller();
 });

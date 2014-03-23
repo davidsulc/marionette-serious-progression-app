@@ -1,5 +1,5 @@
 ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbone, Marionette, $, _){
-  List.Controller = {
+  var Controller = Marionette.Controller.extend({
     listContacts: function(options){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.mainRegion.show(loadingView);
@@ -9,6 +9,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       var contactsListLayout = new List.Layout();
       var contactsListPanel = new List.Panel();
 
+      var self = List.Controller;
       $.when(fetchingContacts).done(function(contacts){
         if(options.criterion){
           contactsListPanel.once("show", function(){
@@ -27,11 +28,11 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           paginatedUrlBase: "contacts/filter/"
         });
 
-        contactsListView.on("page:change", function(){
+        self.listenTo(contactsListView, "page:change", function(){
           ContactManager.trigger("page:change", _.clone(contacts.parameters.attributes));
         });
 
-        contactsListPanel.on("contacts:filter", function(filterCriterion){
+        self.listenTo(contactsListPanel, "contacts:filter", function(filterCriterion){
           contacts.parameters.set({
             page: 1,
             criterion: filterCriterion
@@ -39,19 +40,19 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           ContactManager.trigger("contacts:filter", _.clone(contacts.parameters.attributes));
         });
 
-        contactsListLayout.on("show", function(){
+        self.listenTo(contactsListLayout, "show", function(){
           contactsListLayout.panelRegion.show(contactsListPanel);
           contactsListLayout.contactsRegion.show(contactsListView);
         });
 
-        contactsListPanel.on("contact:new", function(){
+        self.listenTo(contactsListPanel, "contact:new", function(){
           var newContact = new ContactManager.Entities.Contact();
 
           var view = new ContactManager.ContactsApp.New.Contact({
             model: newContact
           });
 
-          view.on("form:submit", function(data){
+          self.listenTo(view, "form:submit", function(data){
             var savingContact = newContact.save(data);
             if(savingContact){
               $.when(savingContact).done(function(){
@@ -84,17 +85,17 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           ContactManager.dialogRegion.show(view);
         });
 
-        contactsListView.on("itemview:contact:show", function(childView, args){
+        self.listenTo(contactsListView, "itemview:contact:show", function(childView, args){
           ContactManager.trigger("contact:show", args.model.get("id"));
         });
 
-        contactsListView.on("itemview:contact:edit", function(childView, args){
+        self.listenTo(contactsListView, "itemview:contact:edit", function(childView, args){
           var model = args.model;
           var view = new ContactManager.ContactsApp.Edit.Contact({
             model: model
           });
 
-          view.on("form:submit", function(data){
+          self.listenTo(view, "form:submit", function(data){
             model.set(data, {silent: true});
             var savingContact = model.save(data, {wait: true});
             if(savingContact){
@@ -136,7 +137,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           ContactManager.dialogRegion.show(view);
         });
 
-        contactsListView.on("itemview:contact:delete", function(childView, args){
+        self.listenTo(contactsListView, "itemview:contact:delete", function(childView, args){
           args.model.destroy();
         });
 
@@ -145,5 +146,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         alert("An unprocessed error happened. Please try again!");
       });
     }
-  }
+  });
+
+  List.Controller = new Controller();
 });
