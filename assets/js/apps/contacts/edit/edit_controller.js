@@ -1,10 +1,7 @@
 ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbone, Marionette, $, _){
   Edit.Controller = {
     editContact: function(id){
-      var loadingView = new ContactManager.Common.Views.Loading({
-        title: "Artificial Loading Delay",
-        message: "Data loading is delayed to demonstrate using a loading view."
-      });
+      var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.mainRegion.show(loadingView);
 
       var fetchingContact = ContactManager.request("contact:entity", id);

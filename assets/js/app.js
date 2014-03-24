@@ -17,6 +17,14 @@ ContactManager.getCurrentRoute = function(){
   return Backbone.history.fragment
 };
 
+ContactManager.on("initialize:before", function(){
+  _.templateSettings = {
+    interpolate: /\{\{=(.+?)\}\}/g,
+    escape: /\{\{-(.+?)\}\}/g,
+    evaluate: /\{\{(.+?)\}\}/g
+  };
+});
+
 ContactManager.on("initialize:after", function(){
   if(Backbone.history){
     Backbone.history.start();
