@@ -1,6 +1,6 @@
 ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbone, Marionette, $, _){
   List.Controller = {
-    listContacts: function(criterion){
+    listContacts: function(options){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.mainRegion.show(loadingView);
 
@@ -10,14 +10,14 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       var contactsListPanel = new List.Panel();
 
       $.when(fetchingContacts).done(function(contacts){
-        if(criterion){
+        if(options.criterion){
           contacts.parameters.set({ criterion: criterion });
           contactsListPanel.once("show", function(){
-            contactsListPanel.triggerMethod("set:filter:criterion", criterion);
+            contactsListPanel.triggerMethod("set:filter:criterion", options.criterion);
           });
         }
 
-        contacts.goTo(1);
+        contacts.goTo(options.page);
         var contactsListView = new ContactManager.Common.Views.PaginatedView({
           collection: contacts,
           mainView: List.Contacts,
@@ -25,7 +25,12 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
             "itemview:contact:show",
             "itemview:contact:edit",
             "itemview:contact:delete"
-          ]
+          ],
+          paginatedUrlBase: "contacts/filter/"
+        });
+
+        contactsListView.on("page:change", function(){
+          ContactManager.trigger("page:change", _.clone(contacts.parameters.attributes));
         });
 
         contactsListPanel.on("contacts:filter", function(filterCriterion){
@@ -33,7 +38,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
             page: 1,
             criterion: filterCriterion
           });
-          ContactManager.trigger("contacts:filter", filterCriterion);
+          ContactManager.trigger("contacts:filter", _.clone(contacts.parameters.attributes));
         });
 
         contactsListLayout.on("show", function(){
