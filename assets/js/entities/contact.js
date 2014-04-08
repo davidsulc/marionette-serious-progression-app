@@ -1,8 +1,6 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Contact = Entities.BaseModel.extend({
-    url: function(){
-      return "contacts_paginated/" + this.get("id") + ".json?include_acquaintances=1";
-    },
+    urlRoot: "contacts_paginated",
 
     initialize: function(){
       this.on("change", function(){
@@ -27,11 +25,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       }
       data.fullName = data.firstName + " ";
       data.fullName += data.lastName;
-
-      if(response.acquaintances){
-        data.acquaintances = new Entities.AcquaintanceCollection(response.acquaintances, { parse: true });
-      }
-
       return data;
     },
 
@@ -53,18 +46,30 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
     }
   });
 
-  Entities.AcquaintanceCollection = Backbone.Collection.extend({
-    model: Entities.Contact,
-    comparator: "firstName"
-  });
-
   Entities.ContactCollection = Backbone.Paginator.requestPager.extend({
     model: Entities.Contact,
 
     initialize: function(models, options){
       options || (options = {});
+
       var params = options.parameters || { page: 1 };
       this.parameters = new Backbone.Model(params);
+
+      this.paginator_core = {
+        dataType: "json",
+        url: "contacts_paginated?"
+      };
+      this.paginator_ui = {
+        firstPage: 1,
+        currentPage: 1,
+        perPage: 10,
+        pagesInRange: 2
+      };
+      this.server_api = {
+        count: function() { return this.perPage },
+        offset: function() { return ((this.parameters.get("page") || 1) - 1) * this.perPage },
+        filter: function() { return this.parameters.get("criterion"); }
+      };
 
       var self = this;
       this.listenTo(this.parameters, "change", function(model){
@@ -82,22 +87,7 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       });
     },
 
-    comparator: "firstName",
-    paginator_core: {
-      dataType: "json",
-      url: "contacts_paginated?"
-    },
-    paginator_ui: {
-      firstPage: 1,
-      currentPage: 1,
-      perPage: 10,
-      pagesInRange: 2
-    },
-    server_api: {
-      count: function() { return this.perPage },
-      offset: function() { return ((this.parameters.get("page") || 1) - 1) * this.perPage },
-      filter: function() { return this.parameters.get("criterion"); }
-    }
+    comparator: "firstName"
   });
 
   _.extend(Entities.ContactCollection.prototype, {
@@ -136,6 +126,12 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       defer.then(options.success, options.error);
       var response = contact.fetch(_.omit(options, 'success', 'error'));
       response.done(function(){
+        contact.set("acquaintances", new Entities.ContactCollection());
+        contact.get("acquaintances").paginator_core.url = contact.url() + "/acquaintances?";
+
+        contact.set("strangers", new Entities.ContactCollection());
+        contact.get("strangers").paginator_core.url = contact.url() + "/strangers?";
+
         defer.resolveWith(response, [contact]);
       });
       response.fail(function(){

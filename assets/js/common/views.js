@@ -67,11 +67,14 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       var data = this.paginatedCollection.info(),
           url = this.urlBase,
           criterion = this.paginatedCollection.parameters.get("criterion");
-      if(criterion){
-        url += "criterion:" + criterion + "+";
+      if(url){
+        if(criterion){
+          url += "criterion:" + criterion + "+";
+        }
+        url += "page:";
       }
-      url += "page:";
       data.urlBase = url;
+
       return data;
     }
   });
