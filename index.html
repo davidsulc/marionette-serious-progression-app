@@ -61,7 +61,7 @@
           <i class="icon-pencil"></i>
           Edit
         </a>
-        <button class="btn btn-small js-delete">
+        <button class="btn btn-small js-behavior-confirmable">
           <i class="icon-remove"></i>
           Delete
         </button>
@@ -88,11 +88,11 @@
     </script>
 
     <script type="text/template" id="contact-acquaintance-view">
-      {{- fullName }} <button class="js-remove-acquaintance">Remove</button>
+      {{- fullName }} <button class="js-behavior-confirmable">Remove</button>
     </script>
 
     <script type="text/template" id="contact-stranger-view">
-      {{- fullName }} <button class="js-add-acquaintance">Acquaintance</button>
+      {{- fullName }} <button class="js-behavior-confirmable">Acquaintance</button>
     </script>
 
     <script type="text/template" id="loading-view">
@@ -208,6 +208,7 @@
     <script src="./assets/js/entities/contact.js"></script>
     <script src="./assets/js/entities/repository.js"></script>
     <script src="./assets/js/common/views.js"></script>
+    <script src="./assets/js/common/behaviors.js"></script>
 
     <script src="./assets/js/apps/contacts/contacts_app.js"></script>
     <script src="./assets/js/apps/contacts/common/views.js"></script>

@@ -59,8 +59,11 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
   Show.Acquaintance = Marionette.ItemView.extend({
     tagName: "li",
     template: "#contact-acquaintance-view",
-    triggers: {
-      "click .js-remove-acquaintance": "acquaintance:remove"
+
+    behaviors: {
+      Confirmable: {
+        event: "acquaintance:remove"
+      }
     }
   });
 
@@ -72,8 +75,14 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
   Show.Stranger = Marionette.ItemView.extend({
     tagName: "li",
     template: "#contact-stranger-view",
-    triggers: {
-      "click .js-add-acquaintance": "acquaintance:add"
+
+    behaviors: {
+      Confirmable: {
+        event: "acquaintance:add",
+        message: function(view){
+          return "Add " + view.model.get("firstName") + " as an acquaintance?";
+        }
+      }
     }
   });
 
