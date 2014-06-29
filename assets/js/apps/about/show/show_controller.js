@@ -1,8 +1,10 @@
 ContactManager.module("AboutApp.Show", function(Show, ContactManager, Backbone, Marionette, $, _){
-  Show.Controller = {
+  var Controller = Marionette.Controller.extend({
     showAbout: function(){
       var view = new Show.Message();
       ContactManager.regions.main.show(view);
     }
-  };
+  });
+
+  Show.Controller = new Controller();
 });

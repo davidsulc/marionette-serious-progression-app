@@ -1,5 +1,5 @@
 ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbone, Marionette, $, _){
-  Edit.Controller = {
+  var Controller = Marionette.Controller.extend({
     editContact: function(id){
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.regions.main.show(loadingView);
@@ -11,7 +11,7 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
           generateTitle: true
         });
 
-        view.on("form:submit", function(data){
+        Edit.Controller.listenTo(view, "form:submit", function(data){
           contact.set(data, {silent: true});
           var savingContact = contact.save(data, {wait: true});
           if(savingContact){
@@ -50,5 +50,7 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
         }
       });
     }
-  };
+  });
+
+  Edit.Controller = new Controller();
 });
