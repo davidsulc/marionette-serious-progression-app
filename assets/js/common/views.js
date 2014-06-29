@@ -1,7 +1,9 @@
 ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, Marionette, $, _){
   Views.Loading = Marionette.ItemView.extend({
-    template: "#loading-view",
+    template: "#loading-view"
+  });
 
+  _.extend(Views.Loading.prototype, {
     title: "Loading Data",
     message: "Please wait, data is loading.",
 
@@ -42,13 +44,15 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
     initialize: function(options){
       this.paginatedCollection = options.paginatedCollection;
       this.urlBase = options.urlBase;
-      this.listenTo(this.paginatedCollection, "page:change:after",  this.render);
+      this.listenTo(this.paginatedCollection, "page:change:after", this.render);
     },
 
     events: {
       "click a[class=navigatable]": "navigateToPage"
-    },
+    }
+  });
 
+  _.extend(Views.PaginationControls.prototype, {
     navigateToPage: function(e){
       e.preventDefault();
       var page = parseInt($(e.target).data("page"), 10);

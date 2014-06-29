@@ -21,8 +21,10 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
 
     ui: {
       criterion: "input.js-filter-criterion"
-    },
+    }
+  });
 
+  _.extend(List.Panel.prototype, {
     filterContacts: function(e){
       e.preventDefault();
       var criterion = this.$(".js-filter-criterion").val();
@@ -50,8 +52,10 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
 
     modelEvents: {
       "change": "render"
-    },
+    }
+  });
 
+  _.extend(List.Contact.prototype, {
     flash: function(cssClass){
       var $view = this.$el;
       $view.hide().toggleClass(cssClass).fadeIn(800, function(){
@@ -93,8 +97,10 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           collectionView.$el.append(childView.el);
         }
       });
-    },
+    }
+  });
 
+  _.extend(List.Contacts.prototype, {
     onRenderCollection: function(){
       this.attachHtml = function(collectionView, childView, index){
         collectionView.$el.prepend(childView.el);
