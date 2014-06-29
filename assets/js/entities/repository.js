@@ -11,7 +11,10 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       });
     },
 
-    urlRoot: "https://api.github.com",
+    urlRoot: "https://api.github.com"
+  });
+
+  _.extend(Entities.Repository.prototype, {
     url: function(){
       return _.result(this, "urlRoot") + "/repos/" + this.username + "/" + (this.get("githubName") || this.get("name"));
     },

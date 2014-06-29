@@ -4,8 +4,10 @@ ContactManager.module("ContactsApp.Common.Views", function(Views, ContactManager
 
     events: {
       "click button.js-submit": "submitClicked"
-    },
+    }
+  });
 
+  _.extend(Views.Form.prototype, {
     submitClicked: function(e){
       e.preventDefault();
       var data = Backbone.Syphon.serialize(this);
