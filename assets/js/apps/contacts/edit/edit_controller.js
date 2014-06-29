@@ -53,4 +53,8 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
   });
 
   Edit.Controller = new Controller();
+
+  ContactManager.ContactsApp.on("stop", function(){
+    Edit.Controller.destroy();
+  });
 });
