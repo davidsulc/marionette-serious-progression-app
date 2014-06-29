@@ -9,6 +9,18 @@ ContactManager.getCurrentRoute = function(){
   return Backbone.history.fragment
 };
 
+ContactManager.startSubApp = function(appName, args){
+  var currentApp = ContactManager.module(appName);
+  if (ContactManager.currentApp === currentApp){ return; }
+
+  if (ContactManager.currentApp){
+   ContactManager.currentApp.stop();
+  }
+
+  ContactManager.currentApp = currentApp;
+  currentApp.start(args);
+};
+
 ContactManager.on("before:start", function(){
   _.templateSettings = {
     interpolate: /\{\{=(.+?)\}\}/g,
