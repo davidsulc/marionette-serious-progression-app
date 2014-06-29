@@ -31,7 +31,7 @@
     </script>
 
     <script type="text/template" id="header-link">
-      <a href="#<%- url %>"><%- name %></a>
+      <a href="#{{- url }}">{{- name }}</a>
     </script>
 
     <script type="text/template" id="contact-list">
@@ -51,14 +51,14 @@
     </script>
 
     <script type="text/template" id="contact-list-item">
-      <td><%- firstName %></td>
-      <td><%- lastName %></td>
+      <td>{{- firstName }}</td>
+      <td>{{- lastName }}</td>
       <td>
-        <a href="#contacts/<%- id %>" class="btn btn-small js-show">
+        <a href="#contacts/{{- id }}" class="btn btn-small js-show">
           <i class="icon-eye-open"></i>
           Show
         </a>
-        <a href="#contacts/<%- id %>/edit" class="btn btn-small js-edit">
+        <a href="#contacts/{{- id }}/edit" class="btn btn-small js-edit">
           <i class="icon-pencil"></i>
           Edit
         </a>
@@ -74,17 +74,17 @@
     </script>
 
     <script type="text/template" id="contact-view">
-      <h1><%- firstName %> <%- lastName %></h1>
-      <a href="#contacts/<%- id %>/edit" class="btn btn-small js-edit">
+      <h1>{{- firstName }} {{- lastName }}</h1>
+      <a href="#contacts/{{- id }}/edit" class="btn btn-small js-edit">
         <i class="icon-pencil"></i>
         Edit this contact
       </a>
-      <p><strong>Phone number:</strong> <%- phoneNumber %></p>
+      <p><strong>Phone number:</strong> {{- phoneNumber }}</p>
     </script>
 
     <script type="text/template" id="loading-view">
-      <h1><%- title %></h1>
-      <p><%- message %></p>
+      <h1>{{- title }}</h1>
+      <p>{{- message }}</p>
       <div id="spinner"></div>
     </script>
 
@@ -92,15 +92,15 @@
       <form>
         <div class="control-group">
           <label for="contact-firstName" class="control-label">First name:</label>
-          <input id="contact-firstName" name="firstName" type="text" value="<%- firstName %>"/>
+          <input id="contact-firstName" name="firstName" type="text" value="{{- firstName }}"/>
         </div>
         <div class="control-group">
           <label for="contact-lastName" class="control-label">Last name:</label>
-          <input id="contact-lastName" name="lastName" type="text" value="<%- lastName %>"/>
+          <input id="contact-lastName" name="lastName" type="text" value="{{- lastName }}"/>
         </div>
         <div class="control-group">
           <label for="contact-phoneNumber" class="control-label">Phone number:</label>
-          <input id="contact-phoneNumber" name="phoneNumber" type="text" value="<%- phoneNumber %>"/>
+          <input id="contact-phoneNumber" name="phoneNumber" type="text" value="{{- phoneNumber }}"/>
         </div>
         <button class="btn js-submit">Save</button>
       </form>
@@ -134,13 +134,11 @@
     <script src="./assets/js/vendor/backbone.js"></script>
     <script src="./assets/js/vendor/backbone.picky.js"></script>
     <script src="./assets/js/vendor/backbone.syphon.js"></script>
-    <script src="./assets/js/vendor/backbone.localstorage.js"></script>
     <script src="./assets/js/vendor/backbone.marionette.js"></script>
     <script src="./assets/js/vendor/spin.js"></script>
     <script src="./assets/js/vendor/spin.jquery.js"></script>
 
     <script src="./assets/js/app.js"></script>
-    <script src="./assets/js/apps/config/storage/localstorage.js"></script>
     <script src="./assets/js/entities/common.js"></script>
     <script src="./assets/js/entities/header.js"></script>
     <script src="./assets/js/entities/contact.js"></script>

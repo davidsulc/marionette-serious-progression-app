@@ -53,24 +53,19 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           });
 
           view.on("form:submit", function(data){
-            if(contacts.length > 0){
-              var highestId = contacts.max(function(c){ return c.id; }).get("id");
-              data.id = highestId + 1;
-            }
-            else{
-              data.id = 1;
-            }
-            if(newContact.save(data)){
-              contacts.add(newContact);
-              view.trigger("dialog:close");
-              var newContactView = contactsListView.children.findByModel(newContact);
-              // check whether the new contact view is displayed (it could be
-              // invisible due to the current filter criterion)
-              if(newContactView){
-                newContactView.flash("success");
+            var contactSaved = newContact.save(data, {
+              success: function(){
+                contacts.add(newContact);
+                view.trigger("dialog:close");
+                var newContactView = contactsListView.children.findByModel(newContact);
+                // check whether the new contact view is displayed (it could be
+                // invisible due to the current filter criterion)
+                if(newContactView){
+                  newContactView.flash("success");
+                }
               }
-            }
-            else{
+            });
+            if( ! contactSaved){
               view.triggerMethod("form:data:invalid", newContact.validationError);
             }
           });

@@ -10,6 +10,12 @@ ContactManager.getCurrentRoute = function(){
 };
 
 ContactManager.on("before:start", function(){
+  _.templateSettings = {
+    interpolate: /\{\{=(.+?)\}\}/g,
+    escape: /\{\{-(.+?)\}\}/g,
+    evaluate: /\{\{(.+?)\}\}/g
+  };
+
   var RegionContainer = Marionette.LayoutView.extend({
     el: "#app-container",
 
