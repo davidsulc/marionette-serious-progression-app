@@ -41,6 +41,7 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
 
     initialize: function(options){
       this.paginatedCollection = options.paginatedCollection;
+      this.urlBase = options.urlBase;
       this.listenTo(this.paginatedCollection, "page:change:after", this.render);
     },
 
@@ -56,7 +57,15 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
     },
 
     serializeData: function(){
-      return this.paginatedCollection.info();
+      var data = this.paginatedCollection.info(),
+          url = this.urlBase,
+          criterion = this.paginatedCollection.parameters.get("criterion");
+      if(criterion){
+        url += "criterion:" + criterion + "+";
+      }
+      url += "page:";
+      data.urlBase = url;
+      return data;
     }
   });
 
@@ -73,7 +82,8 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       var eventsToPropagate = options.propagatedEvents || [];
 
       var controls = new Views.PaginationControls({
-        paginatedCollection: this.collection
+        paginatedCollection: this.collection,
+        urlBase: options.paginatedUrlBase
       });
       var listView = new options.mainView({
         collection: this.collection
