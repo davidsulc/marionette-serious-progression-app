@@ -2,6 +2,7 @@ var ContactManager = new Marionette.Application();
 
 ContactManager.navigate = function(route,  options){
   options || (options = {});
+  route = ContactManager.i18n.currentLanguage + "/" + route;
   Backbone.history.navigate(route, options);
 };
 
@@ -21,7 +22,41 @@ ContactManager.startSubApp = function(appName, args){
   currentApp.start(args);
 };
 
-ContactManager.on("before:start", function(){
+ContactManager.reqres.setHandler("language:change", function(lang){
+  var defer = $.Deferred(),
+      currentRoute = ContactManager.getCurrentRoute().split("/").slice(1).join("/");
+  if(ContactManager.i18n.acceptedLanguages.indexOf(lang) > -1){
+    if(ContactManager.i18n.currentLanguage !== lang){
+      var translationFetched = $.get("languages/" + lang);
+      $.when(translationFetched).done(function(translation){
+        polyglot.extend(translation);
+        ContactManager.i18n.currentLanguage = lang;
+        ContactManager.trigger("language:changed");
+        ContactManager.navigate(currentRoute, {trigger: true})
+        defer.resolve();
+      }).fail(function(){
+        defer.reject();
+        alert(t("contact").generic.unprocessedError);
+      });
+    }
+    else{
+      defer.resolve();
+    }
+  }
+  else{
+    defer.reject();
+    ContactManager.navigate(currentRoute);
+  }
+  return defer.promise();
+});
+
+ContactManager.on("before:start", function(options){
+  options || (options = {});
+  ContactManager.i18n = {
+    acceptedLanguages: options.acceptedLanguages || [],
+    currentLanguage: "en"
+  };
+
   _.templateSettings = {
     interpolate: /\{\{=(.+?)\}\}/g,
     escape: /\{\{-(.+?)\}\}/g,

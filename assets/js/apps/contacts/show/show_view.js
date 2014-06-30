@@ -80,7 +80,7 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
       Confirmable: {
         event: "acquaintance:add",
         message: function(view){
-          return "Add " + view.model.get("firstName") + " as an acquaintance?";
+          return t("acquaintance.addConfirmation", { firstName: view.model.get("firstName") });
         }
       }
     }
