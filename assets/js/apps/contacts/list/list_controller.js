@@ -77,7 +77,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
                   view.triggerMethod("form:data:invalid", response.responseJSON.errors);
                 }
                 else{
-                  alert("An unprocessed error happened. Please try again!");
+                  alert(t("generic.unprocessedError"));
                 }
               });
             }
@@ -125,7 +125,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
                   model.set(response.responseJSON.entity, {silent:true});
                 }
                 else{
-                  alert("An unprocessed error happened. Please try again!");
+                  alert(t("generic.unprocessedError"));
                 }
               });
             }
@@ -147,7 +147,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
 
         ContactManager.regions.main.show(contactsListLayout);
       }).fail(function(){
-        alert("An unprocessed error happened. Please try again!");
+        alert(t("generic.unprocessedError"));
       });
     }
   });

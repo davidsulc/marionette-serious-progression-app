@@ -13,31 +13,47 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
 ContactManager.module("Routers.ContactsApp", function(ContactsAppRouter, ContactManager, Backbone, Marionette, $, _){
   ContactsAppRouter.Router = Marionette.AppRouter.extend({
     appRoutes: {
-      "contacts(/filter/:params)": "listContacts",
-      "contacts/:id": "showContact",
-      "contacts/:id/edit": "editContact"
-    }
-  });
+      ":lang/contacts(/filter/:params)": "listContacts",
+      ":lang/contacts/:id": "showContact",
+      ":lang/contacts/:id/edit": "editContact"
+    },
 
-  var parseParams = function(params){
-    var options = {};
-    if(params && params.trim() !== ''){
-      params = params.split('+');
-      _.each(params, function(param){
-        var values = param.split(':');
-        if(values[1]){
-          if(values[0] === "page"){
-            options[values[0]] = parseInt(values[1], 10);
+    execute: function(callback, args){
+      var lang = args[0],
+          params = args[1],
+          query = args[2] || '',
+          options = {};
+
+      ContactManager.request("language:change", lang).always(function(){
+        if(params){
+          if(params.indexOf(":") < 0){
+            options = params;
           }
           else{
-            options[values[0]] = values[1];
+            if(params.trim() !== ''){
+              params = params.split('+');
+              _.each(params, function(param){
+                var values = param.split(':');
+                if(values[1]){
+                  if(values[0] === "page"){
+                    options[values[0]] = parseInt(values[1], 10);
+                  }
+                  else{
+                    options[values[0]] = values[1];
+                  }
+                }
+              });
+            }
           }
+        }
+
+        _.defaults(options, { page: 1 });
+        if(callback){
+          callback.call(this, options);
         }
       });
     }
-    _.defaults(options, { page: 1 });
-    return options;
-  };
+  });
 
   var serializeParams = function(options){
     options = _.pick(options, "criterion", "page");
@@ -52,8 +68,8 @@ ContactManager.module("Routers.ContactsApp", function(ContactsAppRouter, Contact
   };
 
   var API = {
-    listContacts: function(params){
-      var options = parseParams(params);
+    listContacts: function(options){
+      options || (options = { page: 1 });
       executeAction(ContactManager.ContactsApp.List.Controller.listContacts, options);
     },
 

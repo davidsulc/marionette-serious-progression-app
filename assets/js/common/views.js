@@ -4,8 +4,8 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
   });
 
   _.extend(Views.Loading.prototype, {
-    title: "Loading Data",
-    message: "Please wait, data is loading.",
+    title: t("loading.title"),
+    message: t("loading.message"),
 
     serializeData: function(){
       return {

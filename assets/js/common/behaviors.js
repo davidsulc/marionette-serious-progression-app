@@ -1,7 +1,7 @@
 ContactManager.Behaviors = {
   Confirmable: Marionette.Behavior.extend({
     defaults: {
-      message: "Are you sure?"
+      message: function(){ return t("generic.confirmationMessage"); }
     },
     events: {
       "click .js-behavior-confirmable": "confirmAction"

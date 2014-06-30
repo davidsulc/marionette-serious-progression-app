@@ -13,6 +13,10 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
         ContactManager.trigger(trigger);
       });
 
+      this.listenTo(headers, "language:change", function(lang){
+        ContactManager.request("language:change", lang);
+      });
+
       ContactManager.regions.header.show(headers);
     },
 
