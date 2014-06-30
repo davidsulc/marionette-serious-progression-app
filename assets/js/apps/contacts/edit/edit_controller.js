@@ -30,7 +30,7 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
                 contact.set(response.responseJSON.entity, {silent:true});
               }
               else{
-                alert("An unprocessed error happened. Please try again!");
+                alert(t("generic.unprocessedError"));
               }
             });
           }
@@ -46,7 +46,7 @@ ContactManager.module("ContactsApp.Edit", function(Edit, ContactManager, Backbon
           ContactManager.mainRegion.show(view);
         }
         else{
-          alert("An unprocessed error happened. Please try again!");
+          alert(t("generic.unprocessedError"));
         }
       });
     }

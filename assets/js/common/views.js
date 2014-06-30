@@ -4,8 +4,8 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
 
     initialize: function(options){
       var options = options || {};
-      this.title = options.title || "Loading Data";
-      this.message = options.message || "Please wait, data is loading.";
+      this.title = options.title || t("loading.title");
+      this.message = options.message || t("loading.message");
     }
   });
 

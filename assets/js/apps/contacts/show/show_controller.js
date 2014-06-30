@@ -26,7 +26,7 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
           ContactManager.mainRegion.show(contactView);
         }
         else{
-          alert("An unprocessed error happened. Please try again!");
+          alert(t("generic.unprocessedError"));
         }
       });
     }

@@ -29,7 +29,8 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
     itemViewContainer: "ul",
 
     events: {
-      "click a.brand": "brandClicked"
+      "click a.brand": "brandClicked",
+      "change .js-change-language": "changeLanguage"
     }
   });
 
@@ -37,6 +38,12 @@ ContactManager.module("HeaderApp.List", function(List, ContactManager, Backbone,
     brandClicked: function(e){
       e.preventDefault();
       this.trigger("brand:clicked");
+    },
+
+    changeLanguage: function(e){
+      e.preventDefault();
+      var lang = $(e.target).val();
+      this.trigger("language:change", lang);
     }
   });
 });

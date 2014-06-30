@@ -21,23 +21,32 @@
     <script type="text/template" id="header-template">
       <div class="navbar-inner">
         <div class="container">
-          <a class="brand" href="#contacts">Contact manager</a>
+          <a class="brand" href="#{{- i18nUrl('contacts') }}">Contact manager</a>
           <div class="nav-collapse collapse">
             <ul class="nav"></ul>
+          </div>
+
+          <div class="pull-right" style="padding: 10px 15px;">
+            <select class="span1 js-change-language" style="margin-bottom: 0">
+              {{ _.each(ContactManager.i18n.acceptedLanguages, function(lang){ }}
+                {{ var selected = ContactManager.i18n.currentLanguage === lang ? 'selected="selected"' : ''; }}
+                <option {{- selected }} value="{{- lang }}">{{- lang }}</option>
+              {{ }); }}
+            </select>
           </div>
         </div>
       </div>
     </script>
 
     <script type="text/template" id="header-link">
-      <a href="#{{- url }}">{{- name }}</a>
+      <a href="#{{- i18nUrl(url) }}">{{- t("menu." + name) }}</a>
     </script>
 
     <script type="text/template" id="contact-list">
       <thead>
         <tr>
-          <th>First Name</th>
-          <th>Last Name</th>
+          <th>{{- t("contact.attributes.firstName") }}</th>
+          <th>{{- t("contact.attributes.lastName") }}</th>
           <th></th>
         </tr>
       </thead>
@@ -46,53 +55,53 @@
     </script>
 
     <script type="text/template" id="contact-list-none">
-      <td colspan="3">No contacts to display.</td>
+      <td colspan="3">{{- t("contact.noneToDisplay") }}</td>
     </script>
 
     <script type="text/template" id="contact-list-item">
       <td>{{- firstName }}</td>
       <td>{{- lastName }}</td>
       <td>
-        <a href="#contacts/{{- id }}" class="btn btn-small js-show">
+        <a href="#{{- i18nUrl('contact/' + id) }}" class="btn btn-small js-show">
           <i class="icon-eye-open"></i>
-          Show
+          {{- t("generic.show") }}
         </a>
-        <a href="#contacts/{{- id }}/edit" class="btn btn-small js-edit">
+        <a href="#{{- i18nUrl('contact/' + id + '/edit') }}" class="btn btn-small js-edit">
           <i class="icon-pencil"></i>
-          Edit
+          {{- t("generic.edit") }}
         </a>
         <button class="btn btn-small js-behavior-confirmable">
           <i class="icon-remove"></i>
-          Delete
+          {{- t("generic.delete") }}
         </button>
       </td>
     </script>
 
     <script type="text/template" id="missing-contact-view">
-      <div class="alert alert-error">This contact doesn't exist !</div>
+      <div class="alert alert-error">{{- t("contact.missing") }}</div>
     </script>
 
     <script type="text/template" id="contact-view">
       <h1>{{- data.fullName }}</h1>
-      <a href="#contacts/{{- id }}/edit" class="btn btn-small js-edit">
+      <a href="#{{- i18nUrl('contacts/' + id + '/edit') }}" class="btn btn-small js-edit">
         <i class="icon-pencil"></i>
-        Edit this contact
+        {{- t("contact.editContact") }}
       </a>
-      <p><strong>Phone number:</strong> {{- phoneNumber }}</p>
+      <p><strong>{{- t("contact.attributes.phoneNumber") }}:</strong> {{- phoneNumber }}</p>
 
-      <h2>Acquaintances</h2>
+      <h2>{{- t("contact.attributes.acquaintances") }}</h2>
       <div id="acquaintances-region"></div>
 
-      <h2>Strangers</h2>
+      <h2>{{- t("contact.attributes.strangers") }}</h2>
       <div id="strangers-region"></div>
     </script>
 
     <script type="text/template" id="contact-acquaintance-view">
-      {{- fullName }} <button class="js-behavior-confirmable">Remove</button>
+      {{- fullName }} <button class="js-behavior-confirmable">{{- t("generic.remove") }}</button>
     </script>
 
     <script type="text/template" id="contact-stranger-view">
-      {{- fullName }} <button class="js-behavior-confirmable">Acquaintance</button>
+      {{- fullName }} <button class="js-behavior-confirmable">{{- t("acquaintance.modelName") }}</button>
     </script>
 
     <script type="text/template" id="loading-view">
@@ -105,8 +114,8 @@
       {{ if(totalPages > 1){ }}
         <ul>
           {{ if(currentPage > 1){ }}
-            <li><a href="#{{- urlBase ? urlBase + 1 : "" }}" class="navigatable" data-page="1">&laquo;</a></li>
-            <li><a href="#{{- urlBase ? urlBase + previous  : "" }}" class="navigatable" data-page="{{- previous }}">&lsaquo;</a></li>
+            <li><a href="#{{- urlBase ? i18nUrl(urlBase) + 1 : "" }}" class="navigatable" data-page="1">&laquo;</a></li>
+            <li><a href="#{{- urlBase ? i18nUrl(urlBase) + previous  : "" }}" class="navigatable" data-page="{{- previous }}">&lsaquo;</a></li>
           {{ }else{ }}
             <li class="disabled"><a href="#">&laquo;</a></li>
             <li class="disabled"><a href="#">&lsaquo;</a></li>
@@ -120,18 +129,18 @@
             {{ if(page === currentPage){ }}
               <li class="active disabled"><a href="#">{{- page }}</a></li>
             {{ }else{ }}
-              <li><a href="#{{- urlBase ? urlBase + page  : "" }}" class="navigatable" data-page="{{- page }}">{{- page }}</a></li>
+              <li><a href="#{{- urlBase ? i18nUrl(urlBase) + page  : "" }}" class="navigatable" data-page="{{- page }}">{{- page }}</a></li>
             {{ } }}
           {{ }); }}
 
           {{ if(pageSet[pageSet.length - 1] !== lastPage){ }}
             <li class="disabled"><a href="#">...</a></li>
-            <li><a href="#{{- urlBase ? urlBase + lastPage  : "" }}" class="navigatable" data-page="{{- lastPage }}">{{- lastPage }}</a></li>
+            <li><a href="#{{- urlBase ? i18nUrl(urlBase) + lastPage  : "" }}" class="navigatable" data-page="{{- lastPage }}">{{- lastPage }}</a></li>
           {{ } }}
 
           {{ if(currentPage !== lastPage){ }}
-            <li><a href="#{{- urlBase ? urlBase + next  : "" }}" class="navigatable" data-page="{{- next }}">&rsaquo;</a></li>
-            <li><a href="#{{- urlBase ? urlBase + lastPage  : "" }}" class="navigatable" data-page="{{- lastPage }}">&raquo;</a></li>
+            <li><a href="#{{- urlBase ? i18nUrl(urlBase) + next  : "" }}" class="navigatable" data-page="{{- next }}">&rsaquo;</a></li>
+            <li><a href="#{{- urlBase ? i18nUrl(urlBase) + lastPage  : "" }}" class="navigatable" data-page="{{- lastPage }}">&raquo;</a></li>
           {{ }else{ }}
             <li class="disabled"><a href="#">&rsaquo;</a></li>
             <li class="disabled"><a href="#">&raquo;</a></li>
@@ -147,22 +156,22 @@
 
     <script type="text/template" id="contact-form">
       {{ if(changedOnServer){ }}
-        <p class="alert alert-info">This model has changed on the server, and has been updated with the latest data from the server and your changes have been reapplied.</p>
+        <p class="alert alert-info">{{- t("generic.changedOnServer") }}</p>
       {{ } }}
       <form>
         <div class="control-group">
-          <label for="contact-firstName" class="control-label">First name:</label>
+          <label for="contact-firstName" class="control-label">{{- t("contact.attributes.firstName") }}:</label>
           <input id="contact-firstName" name="firstName" type="text" value="{{- firstName }}"/>
         </div>
         <div class="control-group">
-          <label for="contact-lastName" class="control-label">Last name:</label>
+          <label for="contact-lastName" class="control-label">{{- t("contact.attributes.lastName") }}:</label>
           <input id="contact-lastName" name="lastName" type="text" value="{{- lastName }}"/>
         </div>
         <div class="control-group">
-          <label for="contact-phoneNumber" class="control-label">Phone number:</label>
+          <label for="contact-phoneNumber" class="control-label">{{- t("contact.attributes.phoneNumber") }}:</label>
           <input id="contact-phoneNumber" name="phoneNumber" type="text" value="{{- phoneNumber }}"/>
         </div>
-        <button class="btn js-submit">Save</button>
+        <button class="btn js-submit">{{- t("generic.save") }}</button>
       </form>
     </script>
 
@@ -172,19 +181,19 @@
     </script>
 
     <script type="text/template" id="contact-list-panel">
-      <button class="btn btn-primary js-new">New contact</button>
+      <button class="btn btn-primary js-new">{{- t("contact.newContact") }}</button>
       <form id="filter-form" class="form-search form-inline pull-right">
         <div class="input-append">
           <input type="text" class="span2 search-query js-filter-criterion">
-          <button type="submit" class="btn">Filter contacts</button>
+          <button type="submit" class="btn">{{- t("contact.filterContacts") }}</button>
         </div>
       </form>
     </script>
 
     <script type="text/template" id="about-message">
-      <h1>About this application</h1>
-      <p>This application was designed to accompany you during your learning.</p>
-      <p>Hopefully, it has served you well !</p>
+      <h1>{{- t("about.title") }}</h1>
+      <p>{{- t("about.message.design") }}</p>
+      <p>{{- t("about.message.closing") }}</p>
     </script>
 
     <script src="./assets/js/vendor/jquery.js"></script>
@@ -198,9 +207,53 @@
     <script src="./assets/js/vendor/backbone.picky.js"></script>
     <script src="./assets/js/vendor/backbone.syphon.js"></script>
     <script src="./assets/js/vendor/backbone.marionette.js"></script>
+    <script src="./assets/js/vendor/polyglot.js"></script>
     <script src="./assets/js/vendor/spin.js"></script>
     <script src="./assets/js/vendor/spin.jquery.js"></script>
 
+    <script type="text/javascript">
+      window.polyglot = new Polyglot();
+      _.bindAll(polyglot, "t");
+      window.t = polyglot.t;
+
+      polyglot.extend({
+        "generic.show": "Show",
+        "generic.edit": "Edit",
+        "generic.save": "Save",
+        "generic.delete": "Delete",
+        "generic.remove": "Remove",
+        "generic.changedOnServer": "This model has changed on the server, and has been updated with the latest data from the server and your changes have been reapplied.",
+        "generic.confirmationMessage": "Are you sure?",
+        "generic.unprocessedError": "An unprocessed error happened. Please try again!",
+
+        "menu.Contacts": "Contacts",
+        "menu.About": "About",
+
+        "about.title": "About this application",
+        "about.message.design": "This application was designed to accompany you during your learning.",
+        "about.message.closing": "Hopefully, it has served you well !",
+
+        "acquaintance.modelName": "Acquaintance",
+        "acquaintance.addConfirmation": "Add %{firstName} as an acquaintance?",
+
+        "contact.attributes.firstName": "First Name",
+        "contact.attributes.lastName": "Last Name",
+        "contact.attributes.phoneNumber": "Phone number",
+        "contact.attributes.acquaintances": "Acquaintances",
+        "contact.attributes.strangers": "Strangers",
+
+        "contact.newContact": "New contact",
+        "contact.editContact": "Edit this contact",
+        "contact.filterContacts": "Filter contacts",
+        "contact.noneToDisplay": "No contacts to display.",
+        "contact.missing": "This contact doesn't exist !",
+
+        "loading.title": "Loading Data",
+        "loading.message": "Please wait, data is loading."
+      });
+    </script>
+
+    <script src="./assets/js/apps/config/marionette/views/template_helpers.js"></script>
     <script src="./assets/js/apps/config/marionette/regions/dialog.js"></script>
     <script src="./assets/js/app.js"></script>
     <script src="./assets/js/entities/common.js"></script>
@@ -229,7 +282,9 @@
     <script src="./assets/js/apps/header/list/list_controller.js"></script>
 
     <script type="text/javascript">
-      ContactManager.start();
+      ContactManager.start({
+        acceptedLanguages: ["en", "fr"]
+      });
     </script>
   </body>
 </html>

@@ -12,4 +12,8 @@ ContactManager.module("HeaderApp", function(Header, ContactManager, Backbone, Ma
   this.listenTo(Header, "start", function(){
     API.listHeader();
   });
+
+  this.listenTo(ContactManager, "language:changed", function(){
+    API.listHeader();
+  });
 });

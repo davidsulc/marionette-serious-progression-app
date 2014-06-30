@@ -13,15 +13,17 @@ ContactManager.module("AboutApp", function(AboutApp, ContactManager, Backbone, M
 ContactManager.module("Routers.AboutApp", function(AboutAppRouter, ContactManager, Backbone, Marionette, $, _){
   AboutAppRouter.Router = Marionette.AppRouter.extend({
     appRoutes: {
-      "about" : "showAbout"
+      ":lang/about" : "showAbout"
     }
   });
 
   var API = {
-    showAbout: function(){
-      ContactManager.startSubApp("AboutApp");
-      ContactManager.AboutApp.Show.Controller.showAbout();
-      ContactManager.execute("set:active:header", "about");
+    showAbout: function(lang){
+      ContactManager.request("language:change", lang).always(function(){
+        ContactManager.startSubApp("AboutApp");
+        ContactManager.AboutApp.Show.Controller.showAbout();
+        ContactManager.execute("set:active:header", "about");
+      });
     }
   };
 
