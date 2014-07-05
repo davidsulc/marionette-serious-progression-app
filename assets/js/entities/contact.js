@@ -1,8 +1,63 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
-  Entities.Contact = Entities.BaseModel.extend({
+  Entities.Contact = Backbone.AssociatedModel.extend({
     urlRoot: "contacts_paginated",
 
-    initialize: function(){
+    relations: [
+      {
+        type: Backbone.Many,
+        key: "acquaintances",
+        collectionType: "ContactManager.Entities.ContactCollection"
+      },
+      {
+        type: Backbone.Many,
+        key: "strangers",
+        collectionType: "ContactManager.Entities.ContactCollection"
+      }
+    ],
+
+    initialize: function(options){
+      options || (options = {});
+
+      if(options.configureRelationships){
+        var self = this,
+            acquaintances = this.get("acquaintances"),
+            acquaintancesUrl = _.result(this, "url") + "/acquaintances";
+
+        acquaintances.paginator_core.url = acquaintancesUrl + "?";
+        acquaintancesUrl = acquaintancesUrl + "/";
+        this.listenTo(acquaintances, "add", function(model){
+          $.ajax({
+            url: acquaintancesUrl + model.get("id"),
+            type: "POST",
+            dataType: "json",
+            success: function(){
+              self.get("strangers").remove(model);
+            },
+            error: function(){
+              acquaintances.remove(model);
+            }
+          });
+        });
+        this.listenTo(acquaintances, "remove", function(model){
+          $.ajax({
+            url: acquaintancesUrl + model.get("id"),
+            type: "DELETE",
+            dataType: "json",
+            success: function(){
+              self.get("strangers").add(model);
+            },
+            error: function(){
+              acquaintances.add(model);
+            }
+          });
+        });
+
+
+        this.get("strangers").paginator_core.url = function(){
+          return _.result(self, "url") + "/strangers?";
+        };
+      }
+
       this.on("change", function(){
         this.set("fullName", this.get("firstName") + " " + this.get("lastName"));
       });
@@ -13,6 +68,8 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       lastName: "",
       phoneNumber: "",
 
+      acquaintances: [],
+      strangers: [],
       changedOnServer: false
     }
   });
@@ -120,18 +177,15 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
     },
 
     getContactEntity: function(contactId, options){
-      var contact = new Entities.Contact({id: contactId});
+      var contact = new Entities.Contact({
+        id: contactId,
+        configureRelationships: true
+      });
       var defer = $.Deferred();
       options || (options = {});
       defer.then(options.success, options.error);
       var response = contact.fetch(_.omit(options, 'success', 'error'));
       response.done(function(){
-        contact.set("acquaintances", new Entities.ContactCollection());
-        contact.get("acquaintances").paginator_core.url = contact.url() + "/acquaintances?";
-
-        contact.set("strangers", new Entities.ContactCollection());
-        contact.get("strangers").paginator_core.url = contact.url() + "/strangers?";
-
         defer.resolveWith(response, [contact]);
       });
       response.fail(function(){
