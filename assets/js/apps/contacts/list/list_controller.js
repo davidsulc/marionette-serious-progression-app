@@ -128,6 +128,8 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         });
 
         ContactManager.regions.main.show(contactsListLayout);
+      }).fail(function(){
+        alert("An unprocessed error happened. Please try again!");
       });
     }
   }
