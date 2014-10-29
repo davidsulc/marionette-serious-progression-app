@@ -48,6 +48,10 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       "click": "highlightName"
     },
 
+    modelEvents: {
+      "change": "render"
+    },
+
     flash: function(cssClass){
       var $view = this.$el;
       $view.hide().toggleClass(cssClass).fadeIn(800, function(){

@@ -96,19 +96,29 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
           });
 
           view.on("form:submit", function(data){
-            var savingContact = model.save(data);
+            model.set(data, {silent: true});
+            var savingContact = model.save(data, {wait: true});
             if(savingContact){
+              view.onBeforeClose = function(){
+                model.set({changedOnServer: false});
+              };
               $.when(savingContact).done(function(){
                 childView.render();
+                delete view.onDestroy;
                 view.trigger("dialog:close");
                 childView.flash("success");
               }).fail(function(response){
-                view.onDestroy = function(){
-                  model.set(model.previousAttributes());
-                };
-
                 if(response.status === 422){
+                  view.onDestroy = function(){
+                    model.set(response.responseJSON.entity);
+                  };
+
+                  var keys = ['firstName', 'lastName', 'phoneNumber'];
+                  model.refresh(response.responseJSON.entity, keys);
+
+                  view.render();
                   view.triggerMethod("form:data:invalid", response.responseJSON.errors);
+                  model.set(response.responseJSON.entity, {silent:true});
                 }
                 else{
                   alert("An unprocessed error happened. Please try again!");
@@ -116,6 +126,10 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
               });
             }
             else{
+              view.onDestroy = function(){
+                model.set(model.previousAttributes());
+              };
+
               view.triggerMethod("form:data:invalid", model.validationError);
             }
           });

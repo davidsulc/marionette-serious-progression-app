@@ -82,6 +82,22 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   };
 
   Entities.BaseModel = Backbone.Model.extend({
+    refresh: function(serverData, keys){
+      var previousAttributes = this.previousAttributes();
+      var changed = this.changedAttributes();
+
+      this.set(serverData);
+      if(changed){
+        this.set(changed, {silent: true});
+        keys = _.difference(keys, _.keys(changed))
+      }
+      var clientSide = _.pick(previousAttributes, keys);
+      var serverSide = _.pick(serverData, keys);
+      this.set({
+        changedOnServer: ! _.isEqual(clientSide, serverSide)
+      }, {silent: true});
+    },
+
     sync: function(method, model, options){
       return Backbone.Model.prototype.sync.call(this, method, model, options);
     }
