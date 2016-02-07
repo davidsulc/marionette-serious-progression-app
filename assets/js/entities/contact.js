@@ -46,10 +46,29 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
 
   _.extend(Entities.Contact.prototype, Backbone.Validation.mixin);
 
-  Entities.ContactCollection = Backbone.Collection.extend({
+  Entities.ContactCollection = Backbone.PageableCollection.extend({
+    mode: "client",
     url: "contacts",
     model: Entities.Contact,
-    comparator: "firstName"
+    comparator: "firstName",
+
+    initialize: function(models, options){
+      options || (options = {});
+      var params = options.parameters || { page: 1 };
+      this.parameters = new Backbone.Model(params);
+      var self = this;
+      this.listenTo(this.parameters, "change:page", function(params){
+        Backbone.$.when(self.getPage(parseInt(self.parameters.get("page"), 10))).then(function(){
+          self.trigger("page:change:after");
+        });
+      });
+    },
+
+    state: {
+      firstPage: 1,
+      currentPage: 1,
+      pageSize: 10
+    }
   });
 
   var API = {
