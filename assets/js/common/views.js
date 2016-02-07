@@ -41,6 +41,7 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
 
     initialize: function(options){
       this.paginatedCollection = options.paginatedCollection;
+      this.urlBase = options.urlBase;
       this.listenTo(this.paginatedCollection, "page:change:after",  this.render);
     },
 
@@ -59,6 +60,7 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       data.pageSet = _.range(Math.max(data.currentPage - 2, 1), Math.min(data.currentPage + 2, data.lastPage) + 1);
       data.previousPage = Math.max(data.currentPage - 1, 1);
       data.nextPage = Math.min(data.currentPage + 1, data.lastPage);
+      data.urlBase = this.urlBase + "page:";
 
       return data;
     }
@@ -77,7 +79,8 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       var eventsToPropagate = options.propagatedEvents || [];
 
       var controls = new Views.PaginationControls({
-        paginatedCollection: this.collection
+        paginatedCollection: this.collection,
+        urlBase: options.paginatedUrlBase
       });
       var listView = new options.mainView({
         collection: this.collection

@@ -17,6 +17,7 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         var contactsListView = new ContactManager.Common.Views.PaginatedView({
           collection: contacts,
           mainView: List.Contacts,
+          paginatedUrlBase: "contacts/filter/",
           propagatedEvents: [
             "childview:contact:show",
             "childview:contact:edit",
