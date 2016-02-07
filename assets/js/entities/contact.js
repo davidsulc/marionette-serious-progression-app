@@ -47,8 +47,8 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   _.extend(Entities.Contact.prototype, Backbone.Validation.mixin);
 
   Entities.ContactCollection = Backbone.PageableCollection.extend({
-    mode: "client",
-    url: "contacts",
+    mode: "server",
+    url: "contacts_paginated?",
     model: Entities.Contact,
     comparator: "firstName",
 
@@ -58,9 +58,16 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       this.parameters = new Backbone.Model(params);
       var self = this;
       this.listenTo(this.parameters, "change:page", function(params){
-        Backbone.$.when(self.getPage(parseInt(self.parameters.get("page"), 10))).then(function(){
-          self.trigger("page:change:after");
-        });
+        self.getPage(parseInt(self.parameters.get("page"), 10));
+      });
+      this.listenTo(this.parameters, "change:criterion", function(params){
+        self.getPage(1);
+      });
+
+      this.on("sync", function(){
+        this.trigger("page:change:after");
+        this.sort({silent: true});
+        this.trigger("reset");
       });
     },
 
@@ -68,16 +75,28 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       firstPage: 1,
       currentPage: 1,
       pageSize: 10
+    },
+    queryParams: {
+      count: function() { return this.state.pageSize },
+      offset: function() { return (this.state.currentPage - 1) * this.state.pageSize },
+      filter: function() { return this.parameters.get("criterion"); }
+    },
+    parseState: function (response) {
+      return { totalRecords: response.resultCount };
+    },
+    parseRecords: function (response) {
+      return response.results;
     }
   });
 
   var API = {
     getContactEntities: function(options){
-      var contacts = new Entities.ContactCollection();
+      var contacts = new Entities.ContactCollection([], options);
+      delete options.parameters;
       var defer = $.Deferred();
       options || (options = {});
       defer.then(options.success, options.error);
-      var response = contacts.fetch(_.omit(options, 'success', 'error'));
+      var response = contacts.getPage(contacts.parameters.get("page"), _.omit(options, 'success', 'error'));
       response.done(function(){
         defer.resolveWith(response, [contacts]);
       });

@@ -60,15 +60,6 @@ ContactManager.module("ContactsApp", function(ContactsApp, ContactManager, Backb
     API.listContacts();
   });
 
-  ContactManager.on("contacts:filter", function(criterion){
-    if(criterion){
-      ContactManager.navigate("contacts/filter/criterion:" + criterion);
-    }
-    else{
-      ContactManager.navigate("contacts");
-    }
-  });
-
   ContactManager.on("contact:show", function(id){
     ContactManager.navigate("contacts/" + id);
     API.showContact(id);

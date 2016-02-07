@@ -4,16 +4,18 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
       var loadingView = new ContactManager.Common.Views.Loading();
       ContactManager.regions.main.show(loadingView);
 
-      var fetchingContacts = ContactManager.request("contact:entities");
+      var fetchingContacts = ContactManager.request("contact:entities", { parameters: options });
 
       var contactsListLayout = new List.Layout();
       var contactsListPanel = new List.Panel();
 
       $.when(fetchingContacts).done(function(contacts){
         if(options.criterion){
+          contactsListPanel.once("show", function(){
+            contactsListPanel.triggerMethod("set:filter:criterion", options.criterion);
+          });
         }
 
-        contacts.getPage(options.page);
         var contactsListView = new ContactManager.Common.Views.PaginatedView({
           collection: contacts,
           mainView: List.Contacts,
@@ -31,7 +33,11 @@ ContactManager.module("ContactsApp.List", function(List, ContactManager, Backbon
         });
 
         contactsListPanel.on("contacts:filter", function(filterCriterion){
-          ContactManager.trigger("contacts:filter", filterCriterion);
+          contacts.parameters.set({
+            criterion: filterCriterion,
+            page: 1
+          });
+          ContactManager.trigger("page:change", _.clone(contacts.parameters.attributes));
         });
 
         contactsListLayout.on("show", function(){
