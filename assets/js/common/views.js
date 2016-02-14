@@ -64,7 +64,12 @@ ContactManager.module("Common.Views", function(Views, ContactManager, Backbone, 
       data.pageSet = _.range(Math.max(data.currentPage - 2, 1), Math.min(data.currentPage + 2, data.lastPage) + 1);
       data.previousPage = Math.max(data.currentPage - 1, 1);
       data.nextPage = Math.min(data.currentPage + 1, data.lastPage);
-      data.urlBase = this.urlBase + "page:";
+      if(this.urlBase){
+        data.urlBase = this.urlBase + "page:";
+      }
+      else {
+        data.urlBase = null;
+      }
 
       return data;
     }

@@ -1,10 +1,14 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
   Entities.Contact = Entities.BaseModel.extend({
-    url: function(){
-      return "contacts_paginated/" + this.get("id") + ".json?include_acquaintances=1";
-    },
+    urlRoot: "contacts_paginated",
 
     initialize: function(){
+      this.set("acquaintances", new Entities.ContactCollection());
+      this.get("acquaintances").url = this.url() + "/acquaintances?";
+
+      this.set("strangers", new Entities.ContactCollection());
+      this.get("strangers").url = this.url() + "/strangers?";
+
       this.on("change", function(){
         this.set("fullName", this.get("firstName") + " " + this.get("lastName"));
       });
@@ -28,10 +32,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       data.fullName = data.firstName + " ";
       data.fullName += data.lastName;
 
-      if(response.acquaintances){
-        data.acquaintances = new Entities.AcquaintanceCollection(response.acquaintances, { parse: true });
-      }
-
       return data;
     },
 
@@ -54,11 +54,6 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
   });
 
   _.extend(Entities.Contact.prototype, Backbone.Validation.mixin);
-
-  Entities.AcquaintanceCollection = Backbone.Collection.extend({
-    model: Entities.Contact,
-    comparator: "firstName"
-  });
 
   Entities.ContactCollection = Backbone.PageableCollection.extend({
     mode: "server",
@@ -130,6 +125,12 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       defer.then(options.success, options.error);
       var response = contact.fetch(_.omit(options, 'success', 'error'));
       response.done(function(){
+        contact.set("acquaintances", new Entities.ContactCollection());
+        contact.get("acquaintances").url = contact.url() + "/acquaintances?";
+
+        contact.set("strangers", new Entities.ContactCollection());
+        contact.get("strangers").url = contact.url() + "/strangers?";
+
         defer.resolveWith(response, [contact]);
       });
       response.fail(function(){

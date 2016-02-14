@@ -82,15 +82,18 @@
       <p><strong>Phone number:</strong> {{- phoneNumber }}</p>
 
       <h2>Acquaintances</h2>
-      {{ if(acquaintances.models.length > 0){ }}
-        <ul>
-        {{ _.each(acquaintances.models, function(a){ }}
-          <li>{{- a.attributes.fullName }}</li>
-        {{ }); }}
-        </ul>
-      {{ }else{ }}
-        <p>This contact doesn't know anybody...</p>
-      {{ } }}
+      <div id="acquaintances-region"></div>
+
+      <h2>Strangers</h2>
+      <div id="strangers-region"></div>
+    </script>
+
+    <script type="text/template" id="contact-acquaintance-view">
+      {{- fullName }} <button class="js-remove-acquaintance">Remove</button>
+    </script>
+
+    <script type="text/template" id="contact-stranger-view">
+      {{- fullName }} <button class="js-add-acquaintance">Acquaintance</button>
     </script>
 
     <script type="text/template" id="loading-view">
@@ -103,8 +106,8 @@
       {{ if(totalPages > 1){ }}
         <ul>
           {{ if(currentPage > 1){ }}
-            <li><a href="#{{- urlBase + 1 }}" class="navigatable" data-page="1">&laquo;</a></li>
-            <li><a href="#{{- urlBase + previousPage }}" class="navigatable" data-page="{{- previousPage }}">&lsaquo;</a></li>
+            <li><a href="#{{- urlBase ? urlBase + 1 : '' }}" class="navigatable" data-page="1">&laquo;</a></li>
+            <li><a href="#{{- urlBase ? urlBase + previousPage : '' }}" class="navigatable" data-page="{{- previousPage }}">&lsaquo;</a></li>
           {{ }else{ }}
             <li class="disabled"><a href="#">&laquo;</a></li>
             <li class="disabled"><a href="#">&lsaquo;</a></li>
@@ -118,18 +121,18 @@
             {{ if(page === currentPage){ }}
               <li class="active disabled"><a href="#">{{- page }}</a></li>
             {{ }else{ }}
-              <li><a href="#{{- urlBase + page }}" class="navigatable" data-page="{{- page }}">{{- page }}</a></li>
+              <li><a href="#{{- urlBase ? urlBase + page : '' }}" class="navigatable" data-page="{{- page }}">{{- page }}</a></li>
             {{ } }}
           {{ }); }}
 
           {{ if(currentPage < lastPage - 2){ }}
             <li class="disabled"><a href="#">...</a></li>
-            <li><a href="#{{- urlBase + lastPage }}" class="navigatable" data-page="{{- lastPage }}">{{- lastPage }}</a></li>
+            <li><a href="#{{- urlBase ? urlBase + lastPage : '' }}" class="navigatable" data-page="{{- lastPage }}">{{- lastPage }}</a></li>
           {{ } }}
 
           {{ if(currentPage !== lastPage){ }}
-            <li><a href="#{{- urlBase + nextPage }}" class="navigatable" data-page="{{- nextPage }}">&rsaquo;</a></li>
-            <li><a href="#{{- urlBase + lastPage }}" class="navigatable" data-page="{{- lastPage }}">&raquo;</a></li>
+            <li><a href="#{{- urlBase ? urlBase + nextPage : '' }}" class="navigatable" data-page="{{- nextPage }}">&rsaquo;</a></li>
+            <li><a href="#{{- urlBase ? urlBase + lastPage : '' }}" class="navigatable" data-page="{{- lastPage }}">&raquo;</a></li>
           {{ }else{ }}
             <li class="disabled"><a href="#">&rsaquo;</a></li>
             <li class="disabled"><a href="#">&raquo;</a></li>
