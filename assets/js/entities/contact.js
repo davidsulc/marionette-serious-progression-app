@@ -1,13 +1,58 @@
 ContactManager.module("Entities", function(Entities, ContactManager, Backbone, Marionette, $, _){
-  Entities.Contact = Entities.BaseModel.extend({
+  Entities.Contact = Backbone.AssociatedModel.extend({
     urlRoot: "contacts_paginated",
 
-    initialize: function(){
-      this.set("acquaintances", new Entities.ContactCollection());
-      this.get("acquaintances").url = this.url() + "/acquaintances?";
+    relations: [
+      {
+        type: Backbone.Many,
+        key: "acquaintances",
+        collectionType: "ContactManager.Entities.ContactCollection"
+      },
+      {
+        type: Backbone.Many,
+        key: "strangers",
+        collectionType: "ContactManager.Entities.ContactCollection"
+      }
+    ],
 
-      this.set("strangers", new Entities.ContactCollection());
-      this.get("strangers").url = this.url() + "/strangers?";
+    initialize: function(options){
+      options || (options = {});
+
+      if(options.configureRelationships){
+        this.set("acquaintances", new Entities.ContactCollection());
+        this.get("acquaintances").url = this.url() + "/acquaintances?";
+
+        this.set("strangers", new Entities.ContactCollection());
+        this.get("strangers").url = this.url() + "/strangers?";
+
+        var self = this;
+        this.listenTo(this.get("acquaintances"), "add", function(model){
+          $.ajax({
+            url: this.url() + "/acquaintances/add/" + model.get("id"),
+            type: "POST",
+            dataType: "json",
+            success: function(){
+              self.get("strangers").remove(model);
+            },
+            error: function(){
+              self.get("acquaintances").remove(model);
+            }
+          });
+        });
+        this.listenTo(this.get("acquaintances"), "remove", function(model){
+          $.ajax({
+            url: this.url() + "/acquaintances/remove/" + model.get("id"),
+            type: "DELETE",
+            dataType: "json",
+            success: function(){
+              self.get("strangers").add(model);
+            },
+            error: function(){
+              self.get("acquaintances").add(model);
+            }
+          });
+        });
+      };
 
       this.on("change", function(){
         this.set("fullName", this.get("firstName") + " " + this.get("lastName"));
@@ -19,6 +64,8 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
       lastName: "",
       phoneNumber: "",
 
+      acquaintances: [],
+      strangers: [],
       changedOnServer: false
     }
   });
@@ -119,18 +166,15 @@ ContactManager.module("Entities", function(Entities, ContactManager, Backbone, M
     },
 
     getContactEntity: function(contactId, options){
-      var contact = new Entities.Contact({id: contactId});
+      var contact = new Entities.Contact({
+        id: contactId,
+        configureRelationships: true
+      });
       var defer = $.Deferred();
       options || (options = {});
       defer.then(options.success, options.error);
       var response = contact.fetch(_.omit(options, 'success', 'error'));
       response.done(function(){
-        contact.set("acquaintances", new Entities.ContactCollection());
-        contact.get("acquaintances").url = contact.url() + "/acquaintances?";
-
-        contact.set("strangers", new Entities.ContactCollection());
-        contact.get("strangers").url = contact.url() + "/strangers?";
-
         defer.resolveWith(response, [contact]);
       });
       response.fail(function(){

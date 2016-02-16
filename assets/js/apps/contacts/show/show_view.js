@@ -13,6 +13,37 @@ ContactManager.module("ContactsApp.Show", function(Show, ContactManager, Backbon
 
     events: {
       "click a.js-edit": "editClicked"
+    },
+
+    onShow: function(){
+      var acquaintancesView = new ContactManager.Common.Views.PaginatedView({
+        collection: this.model.get("acquaintances"),
+        mainView: Show.Acquaintances,
+        propagatedEvents: ["childview:acquaintance:remove"]
+      });
+      this.listenTo(acquaintancesView, "page:change", function(page){
+        this.model.get("acquaintances").parameters.set("page", page);
+      });
+
+      var strangersView = new ContactManager.Common.Views.PaginatedView({
+        collection: this.model.get("strangers"),
+        mainView: Show.Strangers,
+        propagatedEvents: ["childview:acquaintance:add"]
+      });
+      var contact = this.model;
+      this.listenTo(strangersView, "page:change", function(page){
+        contact.get("strangers").parameters.set("page", page);
+      });
+
+      Show.Controller.listenTo(acquaintancesView, "childview:acquaintance:remove", function(view, args){
+        contact.get("acquaintances").remove(args.model);
+      });
+      Show.Controller.listenTo(strangersView, "childview:acquaintance:add", function(view, args){
+        contact.get("acquaintances").add(args.model);
+      });
+
+      this.acquaintancesRegion.show(acquaintancesView);
+      this.strangersRegion.show(strangersView);
     }
   });
 
